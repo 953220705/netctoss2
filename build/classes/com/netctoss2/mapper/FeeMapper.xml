@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.netctoss2.dao.FeeDao">
+ 	<select id="selPageFee" resultType="fee">
+ 		select * from fees 
+ 		<if test="rank!=null">
+ 			order by ${rank} ${order}
+ 		</if>
+ 		limit #{sIndex},#{length}
+ 	</select>
+ 	<insert id="insertFee">
+ 		insert into fees(fee_name,fee_type,basic_time,basic_fee,unit_cost,create_time,instructions) values(#{fee_name},#{fee_type},#{basic_time},#{basic_fee},#{unit_cost},now(),#{instructions})
+ 	</insert>
+ 	<select id="selFee" resultType="fee">
+ 		select * from fees where fee_id=#{fee_id}
+ 	</select>
+ 	<update id="updateFee">
+ 		update fees set fee_name=#{fee_name},fee_type=#{fee_type},basic_time=#{basic_time},basic_fee=${basic_fee},unit_cost=${unit_cost},instructions=${instructions} where fee_id=${fee_id}
+ 	</update>
+ 	<update id="updateFeeState">
+ 		update fees set fee_state=1,start_time=now() where fee_id=#{fee_id}
+ 	</update>
+ 	<delete id="delFee">
+ 		delete from fees where fee_id=#{fee_id}
+ 	</delete>
+ 	<select id="selAllFee" resultType="fee">
+ 		select * from fees
+ 	</select>
+ </mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.netctoss2.dao.RoleDao">
+ 	<resultMap type="role" id="roleInfo">
+ 		<id property="role_id" column="role_id"/>
+ 		<collection property="lpe" select="com.netctoss2.dao.PermissionsDao.selRoleOfPer" column="role_id" >
+ 			<id property="per_id" column="per_id"/>
+ 			<result property="per_name" column="per_name"/>
+ 		</collection>
+ 	</resultMap>
+ 	<select id="selAdminOfRole" resultType="role">
+ 		select * from arrelation ar,role r where ar.role_id=r.role_id and ar.admin_id=#{admin_id}
+ 	</select>
+ 	<select id="selPageRole" resultMap="roleInfo">
+ 		select role_id,role_name from role order by role_id limit #{sIndex},#{length}
+ 	</select>
+ 	<update id="updateRoleName">
+ 		update role set role_name=#{role_name} where role_id=#{role_id}
+ 	</update>
+ 	<delete id="delRoleOfPer">
+ 		delete from rprelation where role_id=#{role_id}
+ 	</delete>
+ 	<insert id="insertRoleOfPer">
+ 		insert into rprelation(role_id,per_id) values
+		<foreach item="item" collection="lpe" separator=",">
+			(#{role_id},#{item.per_id})
+		</foreach>
+ 	</insert>
+ 	<select id="selRole" resultMap="roleInfo">
+ 		select * from role where role_id=#{role_id}
+ 	</select>
+ 	<insert id="insertRole" useGeneratedKeys="true" keyProperty="role_id">
+ 		insert into role(role_name) values(#{role_name});
+ 	</insert>
+ 	<delete id="delRole">
+ 		delete from role where role_id=#{role_id}
+ 	</delete>
+ 	<select id="selAllRole" resultType="role">
+		select * from role
+	</select>
+ </mapper>

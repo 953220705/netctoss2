@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.netctoss2.dao.ServicesDao">
+ <resultMap type="services" id="servicesInfo">
+ 	<id property="ser_id" column="ser_id"/>
+ 	<result property="ser_oslog" column="ser_oslog"/>
+ 	<result property="ser_state" column="ser_state"/>
+ 	<result property="ser_ip" column="ser_ip"/>
+ 	<result property="cretime" column="cretime"/>
+ 	<association property="acc" javaType="accounts">
+ 		<id property="acc_log" column="acc_log"/>
+ 		<result property="acc_id" column="acc_id"/>
+ 		<result property="acc_idcard" column="acc_idcard"/>
+ 		<result property="acc_name" column="acc_name"/>
+ 	</association>
+ 	<association property="fee" javaType="fee">
+ 		<id property="fee_id" column="fee_id"/>
+ 		<result property="fee_name" column="fee_name"/>
+ 		<result property="instructions" column="instructions"/>
+ 	</association>
+ </resultMap>
+ 	<select id="selPageServices" resultMap="servicesInfo">
+ 		SELECT s.ser_id,a.acc_id,a.acc_log,a.acc_idcard,a.acc_name,s.ser_oslog,s.cretime,s.ser_state,s.ser_ip,f.fee_id,f.fee_name,f.instructions FROM services s JOIN accounts a ON(s.acc_log=a.acc_log) JOIN fees f ON(s.fee_id=f.fee_id)
+ 		<if test="ser!=null">
+ 			<where>
+ 				<if test="ser.ser_oslog!=null">
+ 					and s.ser_oslog=#{ser.ser_oslog}
+ 				</if>
+ 				<if test="ser.ser_ip!=null">
+ 					and s.ser_ip=#{ser.ser_ip}
+ 				</if>
+ 				<if test="ser.acc!=null">
+ 					and a.acc_idcard=#{ser.acc.acc_idcard}
+ 				</if>
+ 				<if test="ser.ser_state!=null">
+ 					and s.ser_state=#{ser.ser_state}
+ 				</if>
+ 			</where>
+ 		</if>
+ 		order by s.ser_id limit #{sIndex},#{length}
+ 	</select>
+ 	<insert id="insertSer" useGeneratedKeys="true" keyProperty="ser_id">
+ 		insert into services(acc_log,ser_oslog,ser_ospsw,ser_state,ser_ip,fee_id,cretime) values(${acc.acc_log},${ser_oslog},${ser_ospsw},'1',${ser_ip},${fee.feeID},now())
+ 	</insert>
+ 	<select id="selSerByID" resultMap="servicesInfo">
+ 		SELECT  s.ser_id,a.acc_id,a.acc_log,a.acc_idcard,a.acc_name,s.cretime,s.ser_oslog,s.ser_state,s.ser_ip,f.fee_id,f.fee_name,f.instructions FROM services s JOIN accounts a ON(s.acc_log=a.acc_log) JOIN fees f ON(s.fee_id=f.fee_id) where ser_id=#{ser_id}
+ 	</select>
+ 	<update id="updateSer">
+ 		update services set fee_id=#{fee.fee_id} where ser_id=#{ser_id}
+ 	</update>
+ 	<update id="updateSerState">
+ 		update services set ser_state=#{ser_state},dstime=now() where ser_id=#{ser_id}
+ 	</update>
+ </mapper>

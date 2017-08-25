@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netctoss2.dao.AdminDao">
+	<resultMap type="admin" id="adminInfo">
+		<id property="admin_id" column="admin_id" />
+		<collection property="lro" select="com.netctoss2.dao.RoleDao.selAdminOfRole" column="admin_id">
+			<id property="role_id" column="role_id"/>
+			<result property="role_name" column="role_name"/>
+		</collection>
+		<collection property="lpe" select="com.netctoss2.dao.PermissionsDao.selAdminOfPer" column="admin_id">
+			<id property="per_id" column="per_id"/>
+			<result property="per_name" column="per_name"/>
+			<result property="per_url"  column="per_url"/>
+			<result property="per_css" column="per_css"/>
+		</collection>
+	</resultMap>
+	<select id="adminLogin" resultMap="adminInfo">
+		select * from admin where admin_log = #{adminLog} and admin_psw = #{adminPsw}
+	</select>
+	<update id="updateAdmin">
+		update admin set admin_name=#{admin_name},admin_phone=#{admin_phone},admin_email=#{admin_email} where admin_log=#{admin_log}
+	</update>
+	<update id="updateAdminPsw">
+		update admin set admin_psw=#{admin_psw} where admin_id=#{admin_id}
+	</update>
+	<select id="selPageAdmin" resultMap="adminInfo">
+		select * from admin
+		<if test="la!=null">
+		 where admin_id in
+		<foreach item="item" collection="la" open="(" separator="," close=")">
+			#{item.admin_id}
+		</foreach>
+		</if>
+		 ORDER BY admin_id limit #{sIndex},#{length}
+	</select>
+	<select id="selPerOfAdmin" resultType="admin">
+		SELECT DISTINCT a.admin_id FROM admin a,arrelation ar,rprelation rp,permissions p WHERE a.admin_id=ar.admin_id AND ar.role_id=rp.role_id AND rp.per_id=p.per_id
+		<if test="per_id!=null">
+			 and p.per_id=#{per_id}
+		</if>
+	</select>
+	<select id="selRoleOfAdmin" resultType="admin">
+		SELECT distinct a.admin_id FROM admin a,arrelation ar,role r WHERE a.admin_id=ar.admin_id AND ar.role_id=r.role_id
+		<if test="role_name!=null">
+			 and r.role_name=#{role_name}
+		</if>
+	</select>
+	<insert id="insertAdmin" useGeneratedKeys="true" keyProperty="admin_id">
+		insert into admin(admin_name,admin_log,admin_psw,admin_phone,admin_email,powertime,cretime) values(#{admin_name},#{admin_log},#{admin_psw},#{admin_phone},#{admin_email},now(),now())
+	</insert>
+	<insert id="insertAdminofRole">
+		insert into arrelation values
+		<foreach item="item" collection="lro" separator=",">
+			(#{admin_id},#{item.role_id})
+		</foreach>
+	</insert>
+	<select id="selAdminByID" resultMap="adminInfo">
+		select * from admin where admin_id=#{admin_id}
+	</select>
+	<update id="manageAdminInfo">
+		update admin set admin_name=#{admin_name},admin_phone=#{admin_phone},admin_email=#{admin_email},powertime=now() where admin_id=#{admin_id}
+	</update>
+	<delete id="delAdminOfRole">
+		delete from arrelation where admin_id=#{admin_id}
+	</delete>
+	<delete id="delAdmin">
+		delete from admin where admin_id=#{admin_id}
+	</delete>
+	<update id="resetAdminPsw">
+		update admin set admin_psw=123 where admin_id in
+		<foreach item="item" collection="la" open="(" separator="," close=")">
+			#{item.admin_id}
+		</foreach>
+	</update>
+</mapper>

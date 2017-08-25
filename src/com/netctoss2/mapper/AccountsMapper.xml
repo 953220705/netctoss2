@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.netctoss2.dao.AccountsDao">
+ 	<select id="selAccounts" resultType="accounts" >
+ 		select * from accounts order by acc_id limit #{sIndex},#{length}
+ 	</select>
+ 	<insert id="insertAccounts" useGeneratedKeys="true" keyProperty="acc_id">
+ 		insert into accounts(acc_log,acc_psw,acc_name,acc_idcard,acc_phone,acc_sex,acc_recidcard,acc_email,acc_job,acc_address,acc_zipcode,acc_qq,acc_osctime,acc_cretime,acc_lastlogin) values(#{acc_log},#{acc_psw},#{acc_name},#{acc_idcard},#{acc_phone},#{acc_sex},#{acc_recidcard},#{acc_email},#{acc_job},#{acc_address},#{acc_zipcode},#{acc_qq},now(),now(),now())
+ 	</insert>
+ 	<select id="selAccByID" resultType="accounts">
+ 		select * from accounts where acc_id=#{acc_id}
+ 	</select>
+ 	<select id="selAccByCondition" resultType="accounts">
+ 		select * from accounts
+	 	<where>
+ 			<if test="acc.acc_idcard!=null">
+ 				and acc_idcard=#{acc.acc_idcard}
+ 			</if>
+ 			<if test="acc.acc_name!=null">
+ 				and acc_name=#{acc.acc_name}
+ 			</if>
+ 			<if test="acc.acc_log!=null">
+ 				and ac_log=#{acc.acc_log}
+	 		</if>
+	 		<if test="acc.acc_state!=null">
+ 				and acc_state=#{acc.acc_state}
+	 		</if>
+	 	</where>
+	 	order by acc_id limit #{sIndex},#{length}
+ 	</select>
+ 	<update id="updateAcc">
+ 		update accounts set acc_name=#{acc_name},
+ 		<if test='acc_psw!=null'>
+ 			acc_psw=#{acc_psw},
+ 		</if>
+ 		acc_phone=#{acc_phone},acc_sex=#{acc_sex},acc_recidcard=#{acc_recidcard},acc_email=#{acc_email},acc_job=#{acc_job},acc_address=#{acc_address},acc_zipcode=#{acc_zipcode},acc_qq=#{acc_qq} where acc_id=#{acc_id}
+ 	</update>
+ 	<update id="updateAccState">
+ 		update accounts set acc_state=#{acc_state},acc_osctime=now() where acc_id=#{acc_id}
+ 	</update>
+ 	<update id="updateSerState">
+ 		update services set ser_state=#{ser_state},dstime=now() where ser_id=#{ser_id}
+ 	</update>
+ 	<select id="selAccOfSer" resultType="services">
+ 		select s.ser_id from accounts a,services s where a.acc_log=s.acc_log and a.acc_id=#{acc_id}
+ 	</select>
+ </mapper>

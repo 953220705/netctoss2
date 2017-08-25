@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+ <configuration>
+ 	<properties resource="db.prop"></properties>
+ 	<typeAliases>
+ 		<package name="com.netctoss2.entity"/>
+ 	</typeAliases>
+ 	<environments default="develop">
+ 		<environment id="develop">
+ 			<transactionManager type="JDBC"></transactionManager>
+ 			<dataSource type="POOLED">
+ 				<property name="driver" value="${driver}"/>
+ 				<property name="url" value="${url}"/>
+ 				<property name="username" value="${uername}"/>
+ 				<property name="password" value="${password}"/>
+ 			</dataSource>
+ 		</environment>
+ 	</environments>
+ 	<mappers>
+ 		<mapper resource="com/netctoss2/mapper/AdminMapper.xml"/>
+ 		<mapper resource="com/netctoss2/mapper/RoleMapper.xml"/>
+ 		<mapper resource="com/netctoss2/mapper/PermissionsMapper.xml"/>
+ 		<mapper resource="com/netctoss2/mapper/FeeMapper.xml"/>
+ 		<mapper resource="com/netctoss2/mapper/AccountsMapper.xml"/>
+ 		<mapper resource="com/netctoss2/mapper/ServicesMapper.xml"/>
+ 	</mappers>
+ </configuration>
